@@ -3,10 +3,8 @@ var inquirer = require("inquirer")
 var connection = mysql.createConnection({
     host: "localhost",
     port: 3306,
-
     // Your username
     user: "root",
-
     // Your password
     password: "password",
     database: "bamazon"
@@ -32,10 +30,8 @@ function displayTable() {
             console.log(`${itemId}${productName}${departmentName}${price}${stockQuantity}`)
         }
         promptForSale()
-    })
-    
+    })   
 }
-
 function promptForSale(){
     inquirer.prompt([{
         message:"What is the id of the item you wish to purchase?",
@@ -60,9 +56,6 @@ function promptForSale(){
         })
     })
 }
-//TODO figure out how to work with ansyncronus calls and make it so the promt only happens once the connection finishes
-
-
 //should update the database with a reduced quantity of the item
 function buyItem(id,quantity){
     connection.query(`UPDATE products SET ? WHERE ?`,[{
@@ -72,11 +65,6 @@ function buyItem(id,quantity){
     }],function(){connection.end()})
     
 }
-
-
-
-
-
 //adds spaces until the string is a min length
 //converts the input to string if it already isn't
 function standardLength(myString, min) {
@@ -90,3 +78,5 @@ function standardLength(myString, min) {
     return myString
 }
 
+//export the table function and standard length
+//module.exports={displayTable:function(){displayTable}}
