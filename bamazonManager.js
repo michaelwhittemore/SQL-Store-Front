@@ -33,11 +33,45 @@ function mainPrompt() {
             lowInventory()
         } else if (answer.action == "Add to Inventory") {
             addToInventory()
+        } else if (answer.action == "Add New Product") {
+            newRow()
         }
 
     })
 }
-
+//prompts the user and then adds a new row
+function newRow() {
+    inquirer.prompt([
+        {
+            message: "What is the name of the product that you wish to add?",
+            type:"input",
+            name:"product_name"
+        },{
+            message: "What is the department of the product that you wish to add?",
+            type:"input",
+            name:"department_name"
+        },{
+            message: "What is the price of the product that you wish to add?",
+            type:"input",
+            name:"price"
+        },{
+            message: "How much of the product should we add?",
+            type:"input",
+            name:"stock_quantity"
+        }
+    ]).then(function(answer){
+        connection.query("INSERT INTO products SET ?",{
+            product_name:answer.product_name,
+            department_name:answer.department_name,
+            price:answer.price,
+            stock_quantity:answer.stock_quantity
+        },function(err,result){
+            console.log(`${answer.product_name} added to storefront`)
+            connection.end()
+      // Call updateProduct AFTER the INSERT completes
+        })
+    })
+}
 //prompts the user for the item ID of their selected item and how much they want to add
 function addToInventory() {
     inquirer.prompt([{
@@ -49,19 +83,20 @@ function addToInventory() {
         name: "quantity",
         type: "input"
     }]).then(function (answer) {
-        connection.query("SELECT * FROM products WHERE ?", { item_id: answer.id }, function (err, row) {
-            console.log(`${answer.quantity} of ${row[0].product_name} was added. There is now ${Number(row[0].stock_quantity)+Number(answer.quantity)} remaining`)
-            connection.query(`UPDATE products SET ? WHERE ?`, [{
-                stock_quantity: Number(row[0].stock_quantity)+Number(answer.quantity)
-            }, {
+        connection.query("SELECT * FROM products WHERE ?",
+            {
                 item_id: answer.id
-            }])
-        })
+            }, function (err, row) {
+                console.log(`${answer.quantity} of ${row[0].product_name} was added. There is now ${Number(row[0].stock_quantity) + Number(answer.quantity)} remaining`)
+                connection.query(`UPDATE products SET ? WHERE ?`, [{
+                    stock_quantity: Number(row[0].stock_quantity) + Number(answer.quantity)
+                }, {
+                    item_id: answer.id
+                }],function(){connection.end()})
+            })
 
     })
 }
-
-
 //this should display all items which have an inventory of less than five
 function lowInventory() {
     connection.query("SELECT * FROM products WHERE stock_quantity < 5", function (err, table) {
