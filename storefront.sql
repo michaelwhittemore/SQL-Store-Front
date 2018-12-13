@@ -26,7 +26,16 @@ VALUES
 CREATE TABLE departments (
 department_id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
 department_name VARCHAR(30),
-over_head_costs FLOAT
+over_head_costs FLOAT,
+product_sales FLOAT DEFAULT 0
 );
--- SELECT * FROM products
--- SELECT * FROM departments
+-- product sales start at zero
+INSERT INTO departments(department_name,over_head_costs)
+VALUES
+("Pastry",20),
+("Booze",450),
+("Cheese",40),
+("Pet",25);
+
+-- SELECT * FROM products;
+SELECT * FROM departments;
